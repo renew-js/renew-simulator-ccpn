@@ -1,0 +1,11 @@
+{
+  "name": "renew-simulator-ccpn",
+  "version": "1.0.0",
+  "description": "Simulator gateway plugin for CCPN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
