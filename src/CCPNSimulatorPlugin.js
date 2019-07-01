@@ -1,7 +1,9 @@
-class CcpnSimulatorPlugin {
+const CCPNProcess = require('./CCPNProcess');
+
+class CCPNSimulatorPlugin {
 
     constructor () {
-        this.name = 'CcpnSimulatorPlugin';
+        this.name = 'CCPNSimulatorPlugin';
         this.provides = [
             {
                 id: 'ccpn',
@@ -12,7 +14,11 @@ class CcpnSimulatorPlugin {
                 },
             },
         ];
-        this.server = null;
+
+        this.ccpn = new CCPNProcess();
+        this.ccpn.read((data) => {
+            process.stdout.write(data);
+        });
     }
 
     initialize (server) {
@@ -23,8 +29,9 @@ class CcpnSimulatorPlugin {
 
     start (formalismId, data) {
         console.log(formalismId, data);
+        this.ccpn.write(data);
     }
 
 }
 
-module.exports = new CcpnSimulatorPlugin();
+module.exports = new CCPNSimulatorPlugin();

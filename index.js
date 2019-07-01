@@ -1,3 +1,3 @@
-const CcpnSimulatorPlugin = require('./src/core/CcpnSimulatorPlugin');
+const CCPNSimulatorPlugin = require('./src/CCPNSimulatorPlugin');
 
-module.exports = CcpnSimulatorPlugin;
+module.exports = CCPNSimulatorPlugin;
