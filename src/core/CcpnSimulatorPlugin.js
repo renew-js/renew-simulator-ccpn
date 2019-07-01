@@ -3,7 +3,7 @@ class CcpnSimulatorPlugin {
     constructor () {
         this.name = 'CcpnSimulatorPlugin';
         this.provides = [
-            { id: 'ccpn', name: 'CCPN Simulator' },
+            { id: 'ccpn', name: 'CCPN Formalism' },
         ];
     }
 
