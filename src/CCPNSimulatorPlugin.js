@@ -1,4 +1,7 @@
+const builder = require('xmlbuilder');
+
 const CCPNProcess = require('./CCPNProcess');
+
 
 class CCPNSimulatorPlugin {
 
@@ -21,15 +24,33 @@ class CCPNSimulatorPlugin {
         });
     }
 
-    initialize (server) {
-        return new Promise((resolve, reject) => {
-            resolve();
-        });
+    initSimulation (formalismId, data) {
+        console.log(formalismId, data);
+        const load = builder.create('load')
+            // .att('baseFile', 'foo.pnml')
+            .raw(data);
+        this.ccpn.sendElement(load);
     }
 
-    start (formalismId, data) {
-        console.log(formalismId, data);
-        this.ccpn.write(data);
+    startRun () {
+        // this.ccpn.
+    }
+
+    stopRun () {
+
+    }
+
+    terminateRun () {
+
+    }
+
+    step () {
+        this.ccpn.sendElement('step');
+        this.getMarking();
+    }
+
+    getMarking () {
+        this.ccpn.sendElement('getMarking');
     }
 
 }

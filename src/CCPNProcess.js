@@ -1,4 +1,5 @@
 const spawn = require('child_process').spawn;
+const builder = require('xmlbuilder');
 
 class CCPNProcess {
 
@@ -16,6 +17,14 @@ class CCPNProcess {
 
     read (callback) {
         this.process.stdout.on('data', callback);
+    }
+
+    sendElement (element) {
+        if (typeof element === 'string') {
+            element = builder.create(element);
+        }
+
+        this.write(element.end());
     }
 
 }
