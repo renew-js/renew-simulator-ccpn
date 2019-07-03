@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "fast-xml-parser": "^3.12.16",
     "xmlbuilder": "^13.0.2"
   }
 }
