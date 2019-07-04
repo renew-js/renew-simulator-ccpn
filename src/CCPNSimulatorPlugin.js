@@ -19,11 +19,10 @@ class CCPNSimulatorPlugin {
         ];
         this.netInstance = null;
         this.places = null;
+        this.ccpn = new CCPNProcess();
     }
 
     initPlugin (serverManager) {
-        this.ccpn = new CCPNProcess();
-
         serverManager.registerHandlers((socket) => {
             this.ccpn.read((buffer) => {
                 const msg = buffer.toString().replace(/\n/g, '');
@@ -33,7 +32,7 @@ class CCPNSimulatorPlugin {
                 const elementName = Object.keys(data)[0];
                 switch(elementName) {
                     case 'error':
-                        socket.emit('simulation.error', data[elementName]);
+                        this.sendError(socket, data[elementName]);
                         break;
                     case 'netMarking':
                         this.updateMarking(socket, data[elementName]);
@@ -59,23 +58,21 @@ class CCPNSimulatorPlugin {
         });
     }
 
-    startRun () {
+    start () {
         this.ccpn.sendElement('run');
-        this.getMarking();
-    }
-
-    stopRun () {
-        this.ccpn.sendElement('stop');
-        this.getMarking();
-    }
-
-    terminateRun () {
-        this.stopRun();
     }
 
     step () {
         this.ccpn.sendElement('step');
-        this.getMarking();
+    }
+
+    stop () {
+        this.ccpn.sendElement('stop');
+    }
+
+    terminate () {
+        this.stop();
+        this.ccpn.respawn();
     }
 
     getMarking () {
@@ -86,19 +83,25 @@ class CCPNSimulatorPlugin {
         if (!netMarking.placeState || !Array.isArray(netMarking.placeState)) {
             return;
         }
-        for (let i = 0; i < this.places.length; i++) {
-            socket.emit('remove.label', {
-                    parentId: this.places[i].id,
-                    type: 'pt:marking',
-            });
-            if (netMarking.placeState[i].token) {
-                socket.emit('create.label', {
-                    parentId: this.places[i].id,
-                    text: netMarking.placeState[i].token,
-                    type: 'pt:marking',
-                });
+
+        const newMarking = netMarking.placeState.map((placeState, index) => {
+            return {
+                parentId: this.places[index].id,
+                text: placeState.token || '',
+                type: 'pt:marking',
             }
-        }
+        });
+
+        this.sendMarking(socket, newMarking);
+    }
+
+    // TODO Move send methods to simulationManager without circular dependency
+    sendError (socket, data) {
+        socket.emit('simulation.error', data);
+    }
+
+    sendMarking (socket, data) {
+        socket.emit('marking.update', data);
     }
 
 }
