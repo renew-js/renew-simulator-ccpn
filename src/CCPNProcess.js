@@ -4,11 +4,21 @@ const builder = require('xmlbuilder');
 class CCPNProcess {
 
     constructor () {
+        this.process = null;
+        this.spawn();
+    }
+
+    spawn () {
         this.process = spawn('ccpn');
         this.process.stdin.setEncoding('utf-8');
         this.process.stderr.on('data', (data) => {
             process.stderr.write(data);
         });
+    }
+
+    respawn () {
+        this.process.kill();
+        this.spawn();
     }
 
     write (data) {
