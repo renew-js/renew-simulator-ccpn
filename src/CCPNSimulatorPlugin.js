@@ -36,7 +36,12 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
             const msg = buffer.toString().replace(/\n/g, '');
             console.log(this.name + ': ', msg);
 
-            const data = xmlParser.parse(msg);
+            const data = xmlParser.parse(msg, {
+                ignoreAttributes: false,
+                attributeNamePrefix: '',
+                attrNodeName: 'attributes',
+                textNodeName: 'text',
+            });
             const elementName = Object.keys(data)[0];
             switch (elementName) {
                 case 'ccpnOutput':
@@ -100,13 +105,24 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
             return;
         }
 
-        const newMarking = netMarking.placeState.map((placeState, index) => {
-            return {
+        const elements = netMarking.placeState.map((placeState, index) => {
+            const element = {
                 parentId: this.places[index].id,
-                text: placeState.token || '',
+                text: '',
                 type: 'pt:marking',
+            };
+            if (placeState.token && placeState.token.text) {
+                element.text = placeState.token.text;
             }
+            return element;
         });
+        const isHalted = netMarking.attributes
+            && netMarking.attributes.stopped === 'True';
+
+        const newMarking = {
+            elements,
+            isHalted,
+        }
 
         this.sendMarking(socket, newMarking);
     }
