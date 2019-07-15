@@ -11,6 +11,7 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
         super();
         this.ccpn = new CCPNProcess();
         this.isLoaded = false;
+        this.isInitialized = false;
     }
 
     getName () {
@@ -41,15 +42,17 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
                 case 'ccpnOutput':
                     if (data[elementName].hasOwnProperty('error')) {
                         this.sendError(socket, data[elementName].error);
-                    } else {
-                        console.log(this.name + ':  Initialized');
-                        this.sendInitialized(socket);
                     }
                     break;
                 case 'error':
                     this.sendError(socket, data[elementName]);
                     break;
                 case 'netMarking':
+                    if (!this.isInitialized) {
+                        console.log(this.name + ':  Initialized');
+                        this.isInitialized = true;
+                        this.sendInitialized(socket);
+                    }
                     this.updateMarking(socket, data[elementName]);
                     break;
             }
@@ -82,6 +85,7 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
 
     terminate () {
         this.isLoaded = false;
+        this.isInitialized = false;
         this.ccpn.respawn();
     }
 
