@@ -12,6 +12,7 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
         this.ccpn = new CCPNProcess();
         this.isLoaded = false;
         this.isInitialized = false;
+        this.places = null;
     }
 
     getName () {
@@ -74,6 +75,13 @@ class CCPNSimulatorPlugin extends AbstractPlugin {
         this.ccpn.sendElement(load);
         this.isLoaded = true;
         this.step();
+    }
+
+    indexPlaces () {
+        this.places = this.netInstance.elements.filter((element) => {
+            return element.metaObject
+                && element.metaObject.targetType === 'place';
+        });
     }
 
     start () {
